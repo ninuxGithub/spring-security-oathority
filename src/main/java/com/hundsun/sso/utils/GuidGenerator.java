@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.common.util.RandomValueStringGenerato
  * @GuiGenerator
  *
  */
-public class GuiGenerator {
+public class GuidGenerator {
 	private static RandomValueStringGenerator secrectGenerator = new RandomValueStringGenerator(32);
 
 
@@ -25,11 +25,11 @@ public class GuiGenerator {
 	}
 
 	public static void main(String[] args) {
-		String code = GuiGenerator.generate();
+		String code = GuidGenerator.generate();
 		System.out.println(code);
 		System.out.println(code.length());
 
-		System.out.println(GuiGenerator.generateClientSecret());
+		System.out.println(GuidGenerator.generateClientSecret());
 
 	}
 
