@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -77,7 +79,7 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
-	@CacheEvict(value = CacheConstants.USER_CACHE, key = "#user.username()")
+	@CacheEvict(value = CacheConstants.USER_CACHE, key = "#user.getUsername()")
 	public void updateUser(User user) {
 		String sql = "update user_ set username=?, password=? , phone=?, email = ? where guid = ?";
 		jdbcTemplate.update(sql, ps -> {
@@ -118,7 +120,7 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
-	@CacheEvict(value = CacheConstants.USER_CACHE, key = "#user.username()")
+	@Cacheable(value = CacheConstants.USER_CACHE, key = "#username")
 	public User findByUsername(String username) {
 		String sql = "select * from user_ where username = ? and archived =0 ";
 		List<User> list = jdbcTemplate.query(sql, new Object[] { username }, userRowMapper);
@@ -132,8 +134,19 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@Override
 	public List<User> findUsersByUsername(String username) {
-		
-		return null;
+		String sql = "select * from user_ where archived =0 ";
+		Object[] params = new Object[] {};
+		if (StringUtils.isNotBlank(username)) {
+			sql += " and username like ? ";
+			params[0] = username;
+		}
+		sql += " and order by create_time desc";
+
+		List<User> list = jdbcTemplate.query(sql, params, userRowMapper);
+		for (User user : list) {
+			user.getPriviliges().addAll(findPrivilege(user.getId()));
+		}
+		return list;
 	}
 
 }
