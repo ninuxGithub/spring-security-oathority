@@ -139,3 +139,56 @@ Spring Cloud Security OAuth2通过DefaultTokenServices类来完成token生成、
 http://blog.csdn.net/tracker_w/article/category/6360121
 
 http://blog.csdn.net/neosmith/article/details/52539927
+
+
+
+
+
+@Cacheable、@CachePut、@CacheEvict 注释介绍
+表 1. @Cacheable 作用和配置方法
+@Cacheable 的作用 主要针对方法配置，能够根据方法的请求参数对其结果进行缓存
+@Cacheable 主要的参数
+value	缓存的名称，在 spring 配置文件中定义，必须指定至少一个	例如：
+@Cacheable(value=”mycache”) 或者 
+@Cacheable(value={”cache1”,”cache2”}
+key	缓存的 key，可以为空，如果指定要按照 SpEL 表达式编写，如果不指定，则缺省按照方法的所有参数进行组合	例如：
+@Cacheable(value=”testcache”,key=”#userName”)
+condition	缓存的条件，可以为空，使用 SpEL 编写，返回 true 或者 false，只有为 true 才进行缓存	例如：
+@Cacheable(value=”testcache”,condition=”#userName.length()>2”)
+------------------------------------------------------------
+--////////////////////////////////////////////////////////////////////////////////
+表 2. @CachePut 作用和配置方法
+@CachePut 的作用 主要针对方法配置，能够根据方法的请求参数对其结果进行缓存，和 @Cacheable 不同的是，它每次都会触发真实方法的调用
+@CachePut 主要的参数
+value	缓存的名称，在 spring 配置文件中定义，必须指定至少一个	例如：
+@Cacheable(value=”mycache”) 或者 
+@Cacheable(value={”cache1”,”cache2”}
+key	缓存的 key，可以为空，如果指定要按照 SpEL 表达式编写，如果不指定，则缺省按照方法的所有参数进行组合	例如：
+@Cacheable(value=”testcache”,key=”#userName”)
+condition	缓存的条件，可以为空，使用 SpEL 编写，返回 true 或者 false，只有为 true 才进行缓存	例如：
+@Cacheable(value=”testcache”,condition=”#userName.length()>2”)
+
+//////////////////////////////////////////////////////
+
+表 3. @CacheEvict 作用和配置方法
+@CachEvict 的作用 主要针对方法配置，能够根据一定的条件对缓存进行清空
+@CacheEvict 主要的参数
+value	缓存的名称，在 spring 配置文件中定义，必须指定至少一个	例如：
+@CachEvict(value=”mycache”) 或者 
+@CachEvict(value={”cache1”,”cache2”}
+key	缓存的 key，可以为空，如果指定要按照 SpEL 表达式编写，如果不指定，则缺省按照方法的所有参数进行组合	例如：
+@CachEvict(value=”testcache”,key=”#userName”)
+condition	缓存的条件，可以为空，使用 SpEL 编写，返回 true 或者 false，只有为 true 才清空缓存	例如：
+@CachEvict(value=”testcache”,
+condition=”#userName.length()>2”)
+allEntries	是否清空所有缓存内容，缺省为 false，如果指定为 true，则方法调用后将立即清空所有缓存	例如：
+@CachEvict(value=”testcache”,allEntries=true)
+beforeInvocation	是否在方法执行前就清空，缺省为 false，如果指定为 true，则在方法还没有执行的时候就清空缓存，缺省情况下，如果方法执行抛出异常，则不会清空缓存	例如：
+@CachEvict(value=”testcache”，beforeInvocation=true)
+－－－－－－－－－－－－－－
+额外补充：@cache（“something");这个相当于save（）操作，@cachePut相当于Update（）操作，只要他标示的方法被调用，那么都会缓存起来，而@cache则是先看下有没已经缓存了，然后再选择是否执行方法。@CacheEvict相当于Delete（）操作。用来清除缓存用的。
+
+这写配置的声明需要配置好了@enableCache才有用，具体的配置可以看这篇文章
+http://blog.csdn.net/sanjay_f/article/details/47363845
+
+如果忘记了SpEL怎么用了， do yourself a favor and read Chapter 9, Spring Expression Language (SpEL):
